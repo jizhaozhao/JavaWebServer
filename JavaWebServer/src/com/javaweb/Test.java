@@ -10,7 +10,9 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
+
 /**
  * @author jizz
  *
@@ -20,6 +22,7 @@ public class Test {
 	
 	public static void main(String[] args){
 		ServerSocket serverSocket = null;
+		
 		try {
 			serverSocket = new ServerSocket(port, 1, InetAddress.getByName("127.0.0.1"));
 			while(true){
@@ -38,13 +41,20 @@ public class Test {
 				try {
 					i = input.read(buffer);
 				} catch (IOException e) {
+					System.out.println("这里异常");
 					e.printStackTrace();
 					i = -1;
+				}
+				if (-1 == i){//如果没有输入，则保持在接受状态，不加这一判定下面会出现空指针异常
+					continue;
 				}
 				for (int j = 0; j < i; j++) {
 					request.append((char) (buffer[j]));
 				}
 				System.out.println("request = " + request.toString());
+				if ( !"GET".equals(request.substring(0, 3)) ){
+					throw new RuntimeException("请求方法需为GET");
+				}
 				
 				//解析目标地址
 				String uri = null;
@@ -57,15 +67,17 @@ public class Test {
 						uri =  request.toString().substring(index1 + 2, index2);
 					}
 				}
-				System.out.println("uri = " + uri);
+//				System.out.println("uri = " + uri);
+				String str = URLDecoder.decode(uri, "UTF-8");//转换字符编码，解决汉字和空格问题
+//				System.out.println("str = " + str);
 				
 				//按照目标地址获取文件
 				byte[] bytes = new byte[1024];
 				FileInputStream fis = null;
 				try {
-					File file = new File("D:\\", uri);
+					File file = new File("D:\\", str);
 					if (file.exists()) {
-						System.out.println("file = " + file.getAbsolutePath());
+//						System.out.println("file = " + file.getAbsolutePath());
 						if (file.isDirectory()){
 							File[] filelist = file.listFiles();
 							StringBuilder show = new StringBuilder();
@@ -84,7 +96,9 @@ public class Test {
 								show.append("<h3>" + "<a href=\"\\" + file.getParent().substring(3) + "\">" + "返回上级" +"</h3>");
 							}
 							for (File f :filelist){
-								show.append("<br><a href=\"\\" + f.getAbsolutePath().substring(3) + "\">" + f.getName() + "</\"" + "</br>");
+								String eStr = f.getAbsolutePath().substring(3);
+//								System.out.println("eStr = " + eStr);
+								show.append("<br><a href=\"\\" + eStr + "\">" + f.getName() + "</\"" + "</br>");
 							}
 							show.append("</body>");
 							show.append("</html>");
@@ -100,8 +114,8 @@ public class Test {
 							int ch = fis.read(bytes, 0, 1024);
 							while (ch!=-1) {
 							output.write(bytes, 0, ch);
-					        ch = fis.read(bytes, 0, 1024);
-					        }
+							ch = fis.read(bytes, 0, 1024);
+							}
 						}
 					}
 					else {
@@ -112,7 +126,7 @@ public class Test {
 						"\r\n" +
 						"<h1>File Not Found</h1>";
 						output.write(errorMessage.getBytes());
-			 		}
+					}
 				}
 				catch (Exception e) {
 					// thrown if cannot instantiate a File object
@@ -123,6 +137,16 @@ public class Test {
 						fis.close();
 				}
 				socket.close();
+//				Scanner in = new Scanner(System.in);
+//				if (in.hasNext()){
+//					if ("exit".equals(in.nextLine())){
+//						input.close();
+//						output.close();
+//						socket.close();
+//						return;
+//					}
+//				}else
+//					continue;
 			}
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -130,4 +154,5 @@ public class Test {
 			e.printStackTrace();
 		}
 	}
+	
 }
