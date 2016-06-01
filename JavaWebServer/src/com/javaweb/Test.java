@@ -16,6 +16,8 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import java.util.Iterator;
+
 class ServerThreadCode extends Thread {
 	private Socket clientSocket = null;
 	private InputStream input = null;
@@ -25,14 +27,28 @@ class ServerThreadCode extends Thread {
 		super();
 	}
 
-	public void close() {
-		try {
-			clientSocket.close();
-			input.close();
-			output.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public Socket getClientSocket() {
+		return clientSocket;
+	}
+
+	public void setClientSocket(Socket clientSocket) {
+		this.clientSocket = clientSocket;
+	}
+
+	public InputStream getInput() {
+		return input;
+	}
+
+	public void setInput(InputStream input) {
+		this.input = input;
+	}
+
+	public OutputStream getOutput() {
+		return output;
+	}
+
+	public void setOutput(OutputStream output) {
+		this.output = output;
 	}
 
 	public ServerThreadCode(Socket clientSocket) throws IOException {
@@ -87,7 +103,6 @@ class ServerThreadCode extends Thread {
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		}// 转换字符编码，解决汉字和空格问题
-			// System.out.println("str = " + str);
 
 		// 按照目标地址获取文件
 		byte[] bytes = new byte[1024];
@@ -95,11 +110,10 @@ class ServerThreadCode extends Thread {
 		try {
 			File file = new File("D:\\", str);
 			if (file.exists()) {
-				// System.out.println("file = " +
-				// file.getAbsolutePath());
+				System.out.println("file = " + file.getAbsolutePath());
 				if (file.isDirectory()) {
 					File[] filelist = file.listFiles();
-					StringBuilder show = new StringBuilder();
+					StringBuffer show = new StringBuffer();
 					show.append(("<!doctype html>" + "<html lang=\"en\">"
 							+ "<head>" + "<meta charset=\"UTF-8\">"
 							+ "<meta name=\"Generator\" content=\"EditPlus®\">"
@@ -154,20 +168,8 @@ class ServerThreadCode extends Thread {
 					e.printStackTrace();
 				}
 		}
-
 	}
-
-	public void finalize() throws Throwable {
-		super.finalize();
-		System.out.println("finalize method was called!");
-		try {
-			clientSocket.close();
-			input.close();
-			output.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	
 }
 
 class Close extends Thread {
@@ -179,10 +181,14 @@ class Close extends Thread {
 
 	public void run() {
 		Scanner in = new Scanner(System.in);
-		if ("exit".equals(in.nextLine() )) {
-			System.out.println("haha");
-			state = false;
+		while(true){
+			if ("exit".equals(in.nextLine())){
+				System.out.println("haha");
+				state = false;
+				return;
+			}
 		}
+
 	}
 }
 
@@ -198,20 +204,37 @@ public class Test {
 		try {
 			serverSocket = new ServerSocket(port, 1,
 					InetAddress.getByName("127.0.0.1"));
-			ExecutorService fixedThreadPool = Executors.newFixedThreadPool(50);
+			ExecutorService fixedThreadPool = Executors.newFixedThreadPool(30);
 			new Close();
 			while (true) {
-				if (Close.state == false) {
-					System.out.println("shutdown");
-					fixedThreadPool.shutdown();
-					return;
-				} else {
+				if (Close.state == true) {
 					Socket socket = serverSocket.accept();
 					fixedThreadPool.execute(new ServerThreadCode(socket));
-					Map<Thread, StackTraceElement[]> maps = Thread
-							.getAllStackTraces();
-					System.out.println("当前的线程数：" + maps.size());
-					System.out.println(maps.keySet().toString());
+					Map<Thread, StackTraceElement[]> maps = Thread.getAllStackTraces();
+					System.out.println("============当前的线程有=========");
+					Iterator<Thread> it = maps.keySet().iterator();
+					while (it.hasNext()){
+						Thread th = it.next();
+						System.out.println("线程名 :" + th.getName());
+						System.out.println("线程的 创建类 :" + th.getClass());
+					}
+					System.out.println("==============================");
+				} else {
+//					直接这样写会关闭正在运行的线程中的socket，导致异常
+//					Map<Thread, StackTraceElement[]> maps = Thread.getAllStackTraces();
+//					Iterator<Thread> it = maps.keySet().iterator();
+//					while (it.hasNext()){
+//						Thread th = it.next();
+//						if (th instanceof ServerThreadCode){
+//							((ServerThreadCode) th).getClientSocket().close();
+//							((ServerThreadCode) th).getInput().close();
+//							((ServerThreadCode) th).getOutput().close();
+//						}
+//					}
+					serverSocket.close();
+					fixedThreadPool.shutdown();
+					System.out.println("shutdown");
+					return;
 				}
 			}
 
