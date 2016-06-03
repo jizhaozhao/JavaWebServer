@@ -185,6 +185,7 @@ class Close extends Thread {
 			if ("exit".equals(in.nextLine())){
 				System.out.println("haha");
 				state = false;
+				in.close();
 				return;
 			}
 		}
