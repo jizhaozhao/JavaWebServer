@@ -12,15 +12,25 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author jizz
  *
  */
 public class Server {
+	private static Logger log = LoggerFactory.getLogger(Server.class);
 	private static int port = 8080;
 	
+	/**
+	 * @author jizz
+	 * 内部类Colse为守护线程
+	 * 用来判断控制台输入
+	 * 控制台输入为exit时程序退出
+	 */
 	public static class Close extends Thread {
-		public static boolean state = true;
+		public static boolean state = true;//服务器当前状态，默认为开
 
 		
 		public boolean isState() {
@@ -28,7 +38,7 @@ public class Server {
 		}
 
 		public void setState(boolean state) {
-			this.state = state;
+			Close.state = state;
 		}
 
 		public Close() {
@@ -38,7 +48,7 @@ public class Server {
 			Scanner in = new Scanner(System.in);
 			while(true){
 				if ("exit".equals(in.nextLine())){
-					System.out.println("haha");
+					log.info("server will be closed");
 					state = false;
 					in.close();
 					return;
@@ -49,6 +59,7 @@ public class Server {
 	}
 	
 	public static void main(String[] args) {
+		log.info(" server start");
 		ServerSocket serverSocket = null;
 		
 		try {
@@ -82,7 +93,7 @@ public class Server {
 					e.printStackTrace();
 				}
 				fixedThreadPool.shutdown();
-				System.out.println("shutdown");
+				log.info("server shutdown");
 				return;
 			}
 			
