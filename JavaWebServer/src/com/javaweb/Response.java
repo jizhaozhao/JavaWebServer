@@ -8,11 +8,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
  * @author jizz
  *
  */
 public class Response {
+	private static Logger log = LoggerFactory.getLogger(Response.class);
 	private String filePath;//请求的文件路径
 	private OutputStream output;//想浏览器发送的输出流
 
@@ -76,6 +81,7 @@ public class Response {
 		output.write(bytes);
 		output.flush();
 		fis.close();
+		log.debug("input");
 	}
 	
 	public void showFileNotFound() throws IOException{
@@ -86,6 +92,7 @@ public class Response {
 				+ "<h1>File Not Found</h1>";
 		output.write(errorMessage.getBytes());
 		output.flush();
+		log.warn("404 not found");
 	}
 	
 	public void sendStaticResource() {
