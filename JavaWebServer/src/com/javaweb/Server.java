@@ -102,9 +102,9 @@ public class Server {
 	
 	
 	
-	public void open() {}
-	public void shutdown() {}
-	public void lietenning() {}
-	public void parse() {}
-	public void execute() {}
+//	public void open() {}
+//	public void shutdown() {}
+//	public void lietenning() {}
+//	public void parse() {}
+//	public void execute() {}
 }
