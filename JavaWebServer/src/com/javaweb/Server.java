@@ -22,17 +22,13 @@ import org.slf4j.LoggerFactory;
 public class Server {
 	private static Logger log = LoggerFactory.getLogger(Server.class);
 	private static int port = 8080;
-	
+
 	/**
-	 * @author jizz
-	 * 内部类Colse为守护线程
-	 * 用来判断控制台输入
-	 * 控制台输入为exit时程序退出
+	 * @author jizz 内部类Colse为守护线程 用来判断控制台输入 控制台输入为exit时程序退出
 	 */
 	public static class Close extends Thread {
-		public static boolean state = true;//服务器当前状态，默认为开
+		public static boolean state = true;// 服务器当前状态，默认为开
 
-		
 		public boolean isState() {
 			return state;
 		}
@@ -46,8 +42,8 @@ public class Server {
 
 		public void run() {
 			Scanner in = new Scanner(System.in);
-			while(true){
-				if ("exit".equals(in.nextLine())){
+			while (true) {
+				if ("exit".equals(in.nextLine())) {
 					log.info("server will be closed");
 					state = false;
 					in.close();
@@ -57,11 +53,11 @@ public class Server {
 
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		log.info(" server start");
 		ServerSocket serverSocket = null;
-		
+
 		try {
 			serverSocket = new ServerSocket(port, 1,
 					InetAddress.getByName("127.0.0.1"));
@@ -71,13 +67,12 @@ public class Server {
 			e.printStackTrace();
 		}
 		ExecutorService fixedThreadPool = Executors.newFixedThreadPool(30);
-		
+
 		Close close = new Close();
 		close.setDaemon(true);
 		close.start();
-		
-		
-		while(true) {
+
+		while (true) {
 			if (close.isState() == true) {
 				Socket socket;
 				try {
@@ -96,15 +91,13 @@ public class Server {
 				log.info("server shutdown");
 				return;
 			}
-			
+
 		}
 	}
-	
-	
-	
-//	public void open() {}
-//	public void shutdown() {}
-//	public void lietenning() {}
-//	public void parse() {}
-//	public void execute() {}
+
+	// public void open() {}
+	// public void shutdown() {}
+	// public void lietenning() {}
+	// public void parse() {}
+	// public void execute() {}
 }

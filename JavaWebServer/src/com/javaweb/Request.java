@@ -17,19 +17,18 @@ import org.slf4j.LoggerFactory;
  */
 public class Request {
 	private static Logger log = LoggerFactory.getLogger(Request.class);
-	
-	private InputStream input = null;//浏览器发送的输入流
-	private StringBuilder requestString = null;//获取的请求字符串
-	private String uri = null;//解析得到的请求文件路径
+
+	private InputStream input = null;// 浏览器发送的输入流
+	private StringBuilder requestString = null;// 获取的请求字符串
+	private String uri = null;// 解析得到的请求文件路径
 
 	public Request() {
 		super();
 	}
 
 	/**
-	 * 参数为输入流的构造方法
-	 * 给input属性赋值
-	 * 并且直接调用parse方法给request和uri属性赋值
+	 * 参数为输入流的构造方法 给input属性赋值 并且直接调用parse方法给request和uri属性赋值
+	 * 
 	 * @param input
 	 */
 	public Request(InputStream input) {
@@ -65,7 +64,7 @@ public class Request {
 	/**
 	 * 从套接字中获取请求信息字符串
 	 */
-	private void parse(){
+	private void parse() {
 		requestString = new StringBuilder(2048);
 		int i = 0;
 		byte[] buffer = new byte[2048];
@@ -90,16 +89,17 @@ public class Request {
 		}
 		uri = parseUri(requestString.toString());
 	}
-	
+
 	/**
 	 * 解析目标地址
+	 * 
 	 * @param requestString
-	 * @return 
+	 * @return
 	 */
-	private String parseUri(String requestString){
+	private String parseUri(String requestString) {
 		String uri = null;
-		int index1 = 0;//套接字中第一个空格的位置
-		int index2 = 0;//套接字中第二个空格的位置
+		int index1 = 0;// 套接字中第一个空格的位置
+		int index2 = 0;// 套接字中第二个空格的位置
 		index1 = requestString.indexOf(' ');
 		if (index1 != -1) {
 			index2 = requestString.indexOf(' ', index1 + 1);

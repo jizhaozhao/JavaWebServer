@@ -77,25 +77,25 @@
 		</layout>  
 	</appender> 
 	<!--
-	<appender name="d" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>./log/mylog_d_error.log</File>
-		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-			<FileNamePattern>./log/mylog_c_error.%i.log</FileNamePattern>    
-			<MinIndex>1</MinIndex>    
-			<MaxIndex>5</MaxIndex>    
-		</rollingPolicy>  
-		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">  
-			<MaxFileSize>5MB</MaxFileSize>    
-		</triggeringPolicy>  
-		<layout class="ch.qos.logback.classic.PatternLayout">  
-			<Pattern>%date [%thread] %-5level %logger{80} - %msg%n</Pattern>    
-		</layout>  
-	</appender>
-	
-	<logger name="com.javaweb" level="error">  
-		<appender-ref ref="d" />
-	</logger>
-	-->
+		<appender name="d" class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<File>./log/mylog_d_error.log</File>
+			<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+				<FileNamePattern>./log/mylog_c_error.%i.log</FileNamePattern>    
+				<MinIndex>1</MinIndex>    
+				<MaxIndex>5</MaxIndex>    
+			</rollingPolicy>  
+			<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">  
+				<MaxFileSize>5MB</MaxFileSize>    
+			</triggeringPolicy>  
+			<layout class="ch.qos.logback.classic.PatternLayout">  
+				<Pattern>%date [%thread] %-5level %logger{80} - %msg%n</Pattern>    
+			</layout>  
+		</appender>
+
+		<logger name="com.javaweb" level="error">  
+			<appender-ref ref="d" />
+		</logger>
+		-->
 	<root>  
 		<appender-ref ref="all_info" /> 
 		<appender-ref ref="all_error" /> 
